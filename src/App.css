@@ -3,6 +3,29 @@ body {
   font-family: Arial, sans-serif;
 }
 
+@media (max-width: 430px) {
 
+  body {
+    overflow-x: hidden;
+  }
+
+  .feed {
+    column-count: 2;
+    column-gap: 6px;
+    padding: 8px;
+  }
+
+  .navbar {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .upload-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+}
 
 

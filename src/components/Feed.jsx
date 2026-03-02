@@ -217,7 +217,10 @@ function Feed({ searchTerm, session }) {
             <div
               key={`${image.id}-${index}`}
               className="card"
-              onClick={() => setSelectedImage(image)}
+              onClick={() => {
+                console.log("CLICK OK");
+                setSelectedImage(image);
+              }}
             >
               <img
                 className="feed-image"
@@ -264,7 +267,67 @@ function Feed({ searchTerm, session }) {
         <p style={{ textAlign: "center", padding: "20px" }}>
           Cargando...
         </p>
-      )}
+      )}{selectedImage && (
+  <div
+    className="modal"
+    onClick={() => setSelectedImage(null)}
+  >
+    <div
+      className="modal-content"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <img
+        className="modal-left"
+        src={
+          selectedImage.image_url ||
+          selectedImage.urls?.regular
+        }
+        alt=""
+      />
+
+      <div className="modal-right">
+        <button
+          className="modal-save"
+          onClick={() => handleSave(selectedImage)}
+        >
+          {savedImages.includes(selectedImage.id)
+            ? "Guardado"
+            : "Guardar"}
+        </button>
+
+        <button
+          className="modal-like"
+          onClick={() => handleLike(selectedImage)}
+        >
+          {likedImages.includes(selectedImage.id)
+            ? "❤️"
+            : "🤍"}
+        </button>
+
+        <h3>Comentarios</h3>
+
+        <input
+          className="comment-input"
+          placeholder="Escribe un comentario..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+        />
+
+        <button 
+        className="modal-send"
+        onClick={handleComment}>
+          Enviar
+        </button>
+
+        <div>
+          {comments.map((c) => (
+            <p key={c.id}>{c.content}</p>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </>
   );
 }

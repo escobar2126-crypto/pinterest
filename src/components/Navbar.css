@@ -93,21 +93,81 @@
 
   .navbar {
     flex-direction: column;
-    gap: 12px;
+    align-items: center;
     padding: 15px;
+    gap: 15px;
+  }
+
+  .navbar-left {
+    width: 100%;
+    text-align: center;
+  }
+
+  .logo {
+    font-size: 22px;
   }
 
   .navbar-center {
     width: 100%;
   }
 
+  .search-wrapper {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
   .search-input {
+    flex: 1;
     width: 100%;
   }
 
+  .search-btn {
+    padding: 8px 14px;
+    white-space: nowrap;
+  }
+
   .navbar-right {
-    flex-wrap: wrap;
-    justify-content: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .logout {
+    padding: 6px 12px;
   }
 
 }
+
+.upload-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .file-label {
+    text-align: center;
+  }
+
+  .upload-input {
+    width: 100%;
+  }
+
+  .upload-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .file-name {
+    text-align: center;
+    margin-left: 0;
+  }
+
