@@ -15,7 +15,14 @@ function Navbar({ setSearchTerm, session, setView }) {
     <div className="navbar">
 
       <div className="navbar-left">
-        <h2 className="logo">Pinterest</h2>
+       <h2
+  className="logo"
+  onClick={() => {
+    alert("logo clickeado");
+  }}
+>
+  Pinterest
+</h2>
       </div>
 
       <div className="navbar-center">

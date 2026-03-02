@@ -16,6 +16,10 @@
   font-size: 24px;
 }
 
+.logo:hover {
+  opacity: 0.8;
+}
+
 .navbar-center {
   flex: 1;
   display: flex;
