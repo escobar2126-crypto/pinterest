@@ -344,8 +344,7 @@ function Feed({ searchTerm, session }) {
               <div>
                 {comments.map((c) => (
                   <p key={c.id}>
-                    {c.content} -{" "}
-                    {new Date(c.created_at).toLocaleString()}
+                    {c.content}
                   </p>
                 ))}
               </div>
