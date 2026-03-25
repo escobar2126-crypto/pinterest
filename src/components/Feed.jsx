@@ -180,24 +180,24 @@ function Feed({ searchTerm, session }) {
      🔥 COMENTAR
   ========================== */
   const handleComment = async () => {
-    if (!newComment.trim() || !session) return;
+  if (!newComment.trim() || !session) return;
 
-    const { error } = await supabase.from("comments").insert([
+  const { data, error } = await supabase
+    .from("comments")
+    .insert([
       {
         user_id: session.user.id,
         image_id: selectedImage.id,
         content: newComment,
       },
-    ]);
+    ])
+    .select(); 
 
-    if (!error) {
-      setComments((prev) => [
-        ...prev,
-        { id: Date.now(), content: newComment },
-      ]);
-      setNewComment("");
-    }
-  };
+  if (!error && data) {
+    setComments((prev) => [...prev, data[0]]);
+    setNewComment("");
+  }
+};
 
   return (
     <>
