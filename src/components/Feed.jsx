@@ -325,9 +325,7 @@ function Feed({ searchTerm, session }) {
                   : "🤍"}
               </button>
 
-               {selectedImage.created_at &&(
-                <p>{selectedImage.created_at}</p>
-               )}   
+            
 
               <h3>Comentarios</h3>
 
