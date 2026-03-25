@@ -12,6 +12,8 @@ function Feed({ searchTerm, session }) {
   const [loading, setLoading] = useState(false);
   const [savedImages, setSavedImages] = useState([]);
   const [likedImages, setLikedImages] = useState([]);
+
+  // 🔥 IMPORTANTE: comentarios por imagen
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
@@ -99,20 +101,15 @@ function Feed({ searchTerm, session }) {
           : `https://api.unsplash.com/photos?page=${page}&per_page=20&client_id=${ACCESS_KEY}`;
 
         const res = await fetch(url);
-
-        if (!res.ok) {
-          console.log("Unsplash error:", await res.text());
-          return;
-        }
-
         const data = await res.json();
+
         const newImages = debouncedSearch ? data.results : data;
 
         setImages((prev) =>
           page === 1 ? newImages : [...prev, ...newImages]
         );
       } catch (err) {
-        console.log("Error fetching images:", err);
+        console.log(err);
       } finally {
         loadingRef.current = false;
         setLoading(false);
@@ -138,6 +135,21 @@ function Feed({ searchTerm, session }) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /* =========================
+     🔥 CARGAR COMENTARIOS
+  ========================== */
+  const fetchComments = async (imageId) => {
+    const { data, error } = await supabase
+      .from("comments")
+      .select("*")
+      .eq("image_id", imageId)
+      .order("created_at", { ascending: true });
+
+    if (!error && data) {
+      setComments(data);
+    }
+  };
 
   /* =========================
      🔥 GUARDAR
@@ -180,24 +192,24 @@ function Feed({ searchTerm, session }) {
      🔥 COMENTAR
   ========================== */
   const handleComment = async () => {
-  if (!newComment.trim() || !session) return;
+    if (!newComment.trim() || !session) return;
 
-  const { data, error } = await supabase
-    .from("comments")
-    .insert([
-      {
-        user_id: session.user.id,
-        image_id: selectedImage.id,
-        content: newComment,
-      },
-    ])
-    .select(); 
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([
+        {
+          user_id: session.user.id,
+          image_id: selectedImage.id,
+          content: newComment,
+        },
+      ])
+      .select();
 
-  if (!error && data) {
-    setComments((prev) => [...prev, data[0]]);
-    setNewComment("");
-  }
-};
+    if (!error && data) {
+      setComments((prev) => [...prev, data[0]]);
+      setNewComment("");
+    }
+  };
 
   return (
     <>
@@ -218,8 +230,8 @@ function Feed({ searchTerm, session }) {
               key={`${image.id}-${index}`}
               className="card"
               onClick={() => {
-                console.log("CLICK OK");
                 setSelectedImage(image);
+                fetchComments(image.id); // 🔥 CLAVE
               }}
             >
               <img
@@ -230,107 +242,76 @@ function Feed({ searchTerm, session }) {
 
               <div className="overlay">
                 <button
-                  className="pinterest-btn"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleSave(image);
                   }}
-                  style={{
-                    background: savedImages.includes(image.id)
-                      ? "#999"
-                      : "#e60023",
-                  }}
                 >
-                  {savedImages.includes(image.id)
-                    ? "Guardado"
-                    : "Guardar"}
+                  Guardar
                 </button>
               </div>
 
               <button
-                className="like-floating"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLike(image);
                 }}
               >
-                {likedImages.includes(image.id)
-                  ? "❤️"
-                  : "🤍"}
+                ❤️
               </button>
             </div>
           );
         })}
       </div>
 
-      {loading && (
-        <p style={{ textAlign: "center", padding: "20px" }}>
-          Cargando...
-        </p>
-      )}{selectedImage && (
-  <div
-    className="modal"
-    onClick={() => setSelectedImage(null)}
-  >
-    <div
-      className="modal-content"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <img
-        className="modal-left"
-        src={
-          selectedImage.image_url ||
-          selectedImage.urls?.regular
-        }
-        alt=""
-      />
-
-      <div className="modal-right">
-        <button
-          className="modal-save"
-          onClick={() => handleSave(selectedImage)}
+      {selectedImage && (
+        <div
+          className="modal"
+          onClick={() => {
+            setSelectedImage(null);
+            setComments([]); // 🔥 limpiar
+          }}
         >
-          {savedImages.includes(selectedImage.id)
-            ? "Guardado"
-            : "Guardar"}
-        </button>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={
+                selectedImage.image_url ||
+                selectedImage.urls?.regular
+              }
+              alt=""
+            />
 
-        <button
-          className="modal-like"
-          onClick={() => handleLike(selectedImage)}
-        >
-          {likedImages.includes(selectedImage.id)
-            ? "❤️"
-            : "🤍"}
-        </button>
+            <div>
+              <h3>Comentarios</h3>
 
-        <h3>Comentarios</h3>
+              <input
+                value={newComment}
+                onChange={(e) =>
+                  setNewComment(e.target.value)
+                }
+              />
 
-        <input
-          className="comment-input"
-          placeholder="Escribe un comentario..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
+              <button onClick={handleComment}>
+                Enviar
+              </button>
 
-        <button 
-        className="modal-send"
-        onClick={handleComment}>
-          Enviar
-        </button>
-
-        <div>
-          {comments.map((c) => (
-            <p key={c.id}>{c.content}</p>
-          ))}
+              {comments.map((c) => (
+                <div key={c.id}>
+                  <p>{c.content}</p>
+                  <small>
+                    {new Date(
+                      c.created_at
+                    ).toLocaleString()}
+                  </small>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-          {comments.map((n) =>(
-            <p key={n.id}>{n.created_at}</p>
-          ))}
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </>
   );
 }
