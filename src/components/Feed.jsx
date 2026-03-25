@@ -345,7 +345,6 @@
                   {comments.map((c) => (
                     <p key={c.id}>
                       {c.content}
-                      {c.created_at}
                     </p>
                   ))}
                 </div>
