@@ -261,9 +261,6 @@ function Feed({ searchTerm, session }) {
                     ? "Guardado"
                     : "Guardar"}
                 </button>
-                {image.created_at && (
-                  <p>{new Date(image.created_at).toLocaleDateString()}</p>
-                )}
               </div>
 
               <button
