@@ -19,20 +19,20 @@
     const loadingRef = useRef(false);
 
     /* =========================
-      🔥 DEBOUNCE BUSCADOR
+      DEBOUNCE BUSCADOR
     ========================== */
-    useEffect(() => {
+    useEffect(() => {  
       const timer = setTimeout(() => {
         setDebouncedSearch(searchTerm);
         setPage(1);
         setImages([]);
-      }, 500);
+      }, 500);                 //Espera 500ms antes de buscar, Evita que la API se sature
 
       return () => clearTimeout(timer);
     }, [searchTerm]);
 
     /* =========================
-      🔥 CARGAR UPLOADS
+       CARGAR UPLOADS
     ========================== */
     useEffect(() => {
       const fetchUploads = async () => {
@@ -48,7 +48,7 @@
     }, []);
 
     /* =========================
-      🔥 CARGAR FAVORITOS
+       CARGAR FAVORITOS
     ========================== */
     useEffect(() => {
       if (!session) return;
@@ -66,7 +66,7 @@
     }, [session]);
 
     /* =========================
-      🔥 CARGAR LIKES
+      CARGAR LIKES
     ========================== */
     useEffect(() => {
       if (!session) return;
@@ -84,7 +84,7 @@
     }, [session]);
 
     /* =========================
-      🔥 FETCH UNSPLASH
+       FETCH UNSPLASH
     ========================== */
     useEffect(() => {
       const fetchImages = async () => {
@@ -123,7 +123,7 @@
     }, [page, debouncedSearch]);
 
     /* =========================
-      🔥 SCROLL INFINITO
+       SCROLL INFINITO
     ========================== */
     useEffect(() => {
       const handleScroll = () => {
@@ -140,7 +140,7 @@
     }, []);
 
     /* =========================
-      🔥 CARGAR COMENTARIOS POR IMAGEN
+      CARGAR COMENTARIOS POR IMAGEN
     ========================== */
     const fetchComments = async (imageId) => {
       const { data, error } = await supabase
@@ -155,7 +155,7 @@
     };
 
     /* =========================
-      🔥 GUARDAR
+       GUARDAR
     ========================== */
     const handleSave = async (image) => {
       if (!session || savedImages.includes(image.id)) return;
@@ -174,7 +174,7 @@
     };
 
     /* =========================
-      🔥 LIKE
+      LIKES
     ========================== */
     const handleLike = async (image) => {
       if (!session || likedImages.includes(image.id)) return;
@@ -192,7 +192,7 @@
     };
 
     /* =========================
-      🔥 COMENTAR
+       COMENTARIOS
     ========================== */
     const handleComment = async () => {
       if (!newComment.trim() || !session) return;
@@ -235,7 +235,7 @@
                 onClick={() => {
                   console.log("CLICK OK");
                   setSelectedImage(image);
-                  fetchComments(image.id); // 🔥 aquí
+                  fetchComments(image.id); //  aquí
                 }}
               >
                 <img
@@ -285,12 +285,12 @@
           </p>
         )}
 
-        {selectedImage && (
+        {selectedImage && ( // solo aparece si hay una imagen seleccionada
           <div
             className="modal"
             onClick={() => {
               setSelectedImage(null);
-              setComments([]); // 🔥 limpiar
+              setComments([]); // limpiar
             }}
           >
             <div
