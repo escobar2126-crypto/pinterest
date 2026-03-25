@@ -324,9 +324,7 @@ function Feed({ searchTerm, session }) {
                   ? "❤️"
                   : "🤍"}
               </button>
-                  {likedImages.map ((n) =>(
-                    <p key={n.id}>{n.created_at}</p>
-                  ))}
+                
               <h3>Comentarios</h3>
 
               <input
@@ -350,6 +348,9 @@ function Feed({ searchTerm, session }) {
                   </p>
                 ))}
               </div>
+                {likes.map ((n) =>(
+                    <p key={n.id}>{n.created_at}</p>
+                  ))}
             </div>
           </div>
         </div>
