@@ -325,6 +325,10 @@ function Feed({ searchTerm, session }) {
                   : "🤍"}
               </button>
 
+               {image.created_at &&(
+                <p>{image.created_at}</p>
+               )}   
+
               <h3>Comentarios</h3>
 
               <input
