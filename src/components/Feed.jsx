@@ -12,8 +12,6 @@ function Feed({ searchTerm, session }) {
   const [loading, setLoading] = useState(false);
   const [savedImages, setSavedImages] = useState([]);
   const [likedImages, setLikedImages] = useState([]);
-
-  // 🔥 IMPORTANTE: comentarios por imagen
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
@@ -101,15 +99,20 @@ function Feed({ searchTerm, session }) {
           : `https://api.unsplash.com/photos?page=${page}&per_page=20&client_id=${ACCESS_KEY}`;
 
         const res = await fetch(url);
-        const data = await res.json();
 
+        if (!res.ok) {
+          console.log("Unsplash error:", await res.text());
+          return;
+        }
+
+        const data = await res.json();
         const newImages = debouncedSearch ? data.results : data;
 
         setImages((prev) =>
           page === 1 ? newImages : [...prev, ...newImages]
         );
       } catch (err) {
-        console.log(err);
+        console.log("Error fetching images:", err);
       } finally {
         loadingRef.current = false;
         setLoading(false);
@@ -137,7 +140,7 @@ function Feed({ searchTerm, session }) {
   }, []);
 
   /* =========================
-     🔥 CARGAR COMENTARIOS
+     🔥 CARGAR COMENTARIOS POR IMAGEN
   ========================== */
   const fetchComments = async (imageId) => {
     const { data, error } = await supabase
@@ -230,8 +233,9 @@ function Feed({ searchTerm, session }) {
               key={`${image.id}-${index}`}
               className="card"
               onClick={() => {
+                console.log("CLICK OK");
                 setSelectedImage(image);
-                fetchComments(image.id); // 🔥 CLAVE
+                fetchComments(image.id); // 🔥 aquí
               }}
             >
               <img
@@ -242,27 +246,44 @@ function Feed({ searchTerm, session }) {
 
               <div className="overlay">
                 <button
+                  className="pinterest-btn"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleSave(image);
                   }}
+                  style={{
+                    background: savedImages.includes(image.id)
+                      ? "#999"
+                      : "#e60023",
+                  }}
                 >
-                  Guardar
+                  {savedImages.includes(image.id)
+                    ? "Guardado"
+                    : "Guardar"}
                 </button>
               </div>
 
               <button
+                className="like-floating"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLike(image);
                 }}
               >
-                ❤️
+                {likedImages.includes(image.id)
+                  ? "❤️"
+                  : "🤍"}
               </button>
             </div>
           );
         })}
       </div>
+
+      {loading && (
+        <p style={{ textAlign: "center", padding: "20px" }}>
+          Cargando...
+        </p>
+      )}
 
       {selectedImage && (
         <div
@@ -277,6 +298,7 @@ function Feed({ searchTerm, session }) {
             onClick={(e) => e.stopPropagation()}
           >
             <img
+              className="modal-left"
               src={
                 selectedImage.image_url ||
                 selectedImage.urls?.regular
@@ -284,30 +306,49 @@ function Feed({ searchTerm, session }) {
               alt=""
             />
 
-            <div>
+            <div className="modal-right">
+              <button
+                className="modal-save"
+                onClick={() => handleSave(selectedImage)}
+              >
+                {savedImages.includes(selectedImage.id)
+                  ? "Guardado"
+                  : "Guardar"}
+              </button>
+
+              <button
+                className="modal-like"
+                onClick={() => handleLike(selectedImage)}
+              >
+                {likedImages.includes(selectedImage.id)
+                  ? "❤️"
+                  : "🤍"}
+              </button>
+
               <h3>Comentarios</h3>
 
               <input
+                className="comment-input"
+                placeholder="Escribe un comentario..."
                 value={newComment}
-                onChange={(e) =>
-                  setNewComment(e.target.value)
-                }
+                onChange={(e) => setNewComment(e.target.value)}
               />
 
-              <button onClick={handleComment}>
+              <button
+                className="modal-send"
+                onClick={handleComment}
+              >
                 Enviar
               </button>
 
-              {comments.map((c) => (
-                <div key={c.id}>
-                  <p>{c.content}</p>
-                  <small>
-                    {new Date(
-                      c.created_at
-                    ).toLocaleString()}
-                  </small>
-                </div>
-              ))}
+              <div>
+                {comments.map((c) => (
+                  <p key={c.id}>
+                    {c.content} -{" "}
+                    {new Date(c.created_at).toLocaleString()}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         </div>
