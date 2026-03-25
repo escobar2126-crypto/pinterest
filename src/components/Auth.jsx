@@ -32,10 +32,6 @@ export default function Auth() {
           Encuentra ideas que te inspiren
         </p>
 
-        <button className="google-button">
-          Continuar con Google
-        </button>
-
         <div className="divider">
           <span>o</span>
         </div>
