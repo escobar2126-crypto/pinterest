@@ -348,9 +348,6 @@
                     </p>
                   ))}
                 </div>
-                  {selectedImage.created_at &&(
-                    <p>{selectedImage.created_at}</p>
-                  )}
               </div>
             </div>
           </div>
