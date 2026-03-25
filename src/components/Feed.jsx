@@ -324,6 +324,9 @@ function Feed({ searchTerm, session }) {
             <p key={c.id}>{c.content}</p>
           ))}
         </div>
+          {comments.map((n) =>{
+            <p key={n.id}>{n.created_at}</p>
+          })}
       </div>
     </div>
   </div>
